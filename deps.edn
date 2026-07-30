@@ -1,0 +1,15 @@
+{:paths ["src"]
+ ;; Zero runtime deps, including crypto. Signing and hashing are injected
+ ;; capabilities — see dnssec.sign's docstring — so this library never holds or
+ ;; touches a zone-signing key, and the serialization (the half that actually
+ ;; breaks) is testable with no crypto at all.
+ :deps {}
+ :aliases
+ {:test {:extra-paths ["test"]
+         :extra-deps {io.github.cognitect-labs/test-runner
+                      {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+         :main-opts ["-m" "cognitect.test-runner"]
+         :exec-fn cognitect.test-runner.api/test}
+  :lint {:replace-deps {clj-kondo/clj-kondo {:mvn/version "2024.11.14"}}
+         :main-opts ["-m" "clj-kondo.main" "--lint" "src" "test"
+                     "--fail-level" "error"]}}}
