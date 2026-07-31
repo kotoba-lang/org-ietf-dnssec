@@ -225,3 +225,12 @@
   library is IN-only, which the `class-in` constant says out loud."
   [records]
   (group-by (juxt #(canonical-name (:zone/name %)) :zone/type) records))
+
+(defn hex
+  "Octets as lowercase hex — for DS digests, key material in a zone file, and
+  test failure output, where a one-octet difference is otherwise invisible."
+  [bs]
+  (apply str (map #(let [h #?(:clj (Integer/toHexString (bit-and % 0xFF))
+                              :cljs (.toString (bit-and % 0xFF) 16))]
+                     (if (= 1 (count h)) (str "0" h) h))
+                  bs)))

@@ -33,6 +33,40 @@ actually breaks. A DNSSEC bug is almost never in the signature arithmetic; it is
 in **which bytes got signed**. The test suite's "signer" returns the blob it was
 handed, so every assertion is about exactly those bytes — with no crypto at all.
 
+## The reference provider
+
+`dnssec.provider` is one possible injection — Ed25519 via
+[`kotoba-lang/ed25519`](https://github.com/kotoba-lang/ed25519) and SHA-2 via
+the host — so the common case does not have to assemble it:
+
+```clojure
+(require '[dnssec.provider :as p])
+
+(def pubkey (p/public-key seed))
+(p/sign-rrset records {:algorithm :ed25519 :key seed :key-tag tag
+                       :signer "example.com." :original-ttl 3600
+                       :inception … :expiration …})
+(p/delegation-signer dnskey {:algorithm :ed25519 :digest-type :sha256})
+```
+
+It does **not** weaken the boundary: `dnssec.canonical` and `dnssec.sign` still
+import no crypto, requiring them does not load the provider, and a caller with
+an HSM or a key store passes its own two functions and ignores this namespace
+entirely.
+
+`provider_test.cljc` is where the signer stops being a byte shuffler: it signs
+with a real key, rebuilds the blob **the way a validator would** — from the
+RRSIG's own rdata plus the RRset, not from what the signer happened to keep —
+and checks the signature against that. It also asserts the two failures that
+matter: one changed octet in the RRset breaks it, and so does signing with the
+record's current TTL instead of the original (the failure that validates at the
+origin and fails from every cache).
+
+Not covered by the provider: ECDSA and RSA, which are legitimate DNSSEC
+algorithms it refuses rather than signing with the wrong curve; and a Worker
+path, because WebCrypto is asynchronous and zone signing is a job rather than a
+request handler.
+
 ## Canonical form is the whole foundation
 
 A signature is over bytes. If a validator serializes an RRset one byte
@@ -132,4 +166,4 @@ without EDNS0 pushes every query to TCP — so `nameserver.edns` in
 clojure -M:test
 ```
 
-16 tests / 60 assertions.
+25 tests / 88 assertions, including a real-key sign-then-verify round trip.
