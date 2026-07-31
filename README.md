@@ -153,12 +153,43 @@ without EDNS0 pushes every query to TCP — so `nameserver.edns` in
 - **In:** canonical name/RR/RRset forms and ordering, DNSKEY, key tag, DS
   digest input and record, RRSIG signing blob and record, NSEC records and the
   full chain, the type bitmap.
-- **Not yet:** NSEC3 (RFC 5155) — the hashed denial-of-existence that stops an
-  NSEC walk from enumerating the zone. A registry that considers its name list
-  confidential needs it, and should know it is absent rather than discover it.
-  Also absent: signature *validation* (this is a signer), key rollover
-  scheduling, and CDS/CDNSKEY (RFC 7344) for automated parent updates.
+- **Also in:** NSEC3 (RFC 5155) — `dnssec.nsec3`. NSEC proves nonexistence by
+  handing you the two names that surround the queried one, which also lets
+  anyone walk the chain and read out every name in the zone. For a registry
+  whose name list is its business that is not theoretical. NSEC3 hashes the
+  neighbours instead.
+- **Not yet:** signature *validation* (this is a signer; `dnssec.provider`
+  verifies, so a signer can check its own output before publishing), key
+  rollover scheduling, and CDS/CDNSKEY (RFC 7344) for automated parent updates.
 - **Never:** a key, a clock, or a crypto implementation.
+
+## NSEC3, and the two places it is usually wrong
+
+**Iterations are not a security dial.** Higher looks safer and is not: an
+attacker pays the cost once per *candidate name*, and zone names are short and
+dictionary-drawn, so the guessing cost is dominated by the candidate list. The
+**validator** pays it on **every negative answer**. A high count is a
+denial-of-service amplifier pointed at yourself, which is why RFC 9276
+recommends `iterations = 0` and an empty salt — the default here, with anything
+large refused.
+
+**`base32hex`, not standard base32.** Standard base32 is `A-Z2-7`; base32hex is
+`0-9A-V`. They differ in *every* symbol, so the wrong one yields owner names
+that sort differently and match nothing — a chain that proves nothing while
+looking correct. The RFC 4648 test vectors are in the suite.
+
+Two more, each with a test: the hash is over the **canonical wire form** of the
+name, not the text (hashing the text gives a chain no validator reproduces),
+and the salt is applied at **every** iteration rather than only the first.
+
+`covers?` handles the **wrap** at the end of the chain, where `next` is smaller
+than `hash`. Written as a plain `lo < x < hi` range that interval is never
+covered — and it is exactly the one an attacker would aim at.
+
+**Opt-out is deliberately not produced.** It lets a zone skip NSEC3 records for
+unsigned delegations, which is why large TLDs adopted it, and it also means the
+zone can no longer prove those delegations do not exist. That is a different
+security model, not a parameter.
 
 ## Test
 
