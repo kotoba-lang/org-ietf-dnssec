@@ -3,7 +3,12 @@
  ;; capabilities — see dnssec.sign's docstring — so this library never holds or
  ;; touches a zone-signing key, and the serialization (the half that actually
  ;; breaks) is testable with no crypto at all.
- :deps {}
+ ;; dnssec.canonical and dnssec.sign remain crypto-free — the dependency below
+ ;; is used only by dnssec.provider, the REFERENCE injection. A caller with an
+ ;; HSM or a key store passes its own sign-fn/digest-fn and never loads it.
+ :deps {io.github.kotoba-lang/ed25519
+        {:git/url "https://github.com/kotoba-lang/ed25519.git"
+         :git/sha "c1ba8322a33b668da1311ca69a8cdde3c7981b52"}}
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
