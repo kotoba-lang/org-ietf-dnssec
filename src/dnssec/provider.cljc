@@ -74,6 +74,22 @@
 
 ;; ── signing ───────────────────────────────────────────────────────────────
 
+(defn sha1-fn
+  "SHA-1, for NSEC3 (RFC 5155 §5). It is the only hash the protocol defines,
+  and NSEC3 needs **preimage** resistance rather than collision resistance, so
+  SHA-1's known weakness is not the one that would matter here. It is also not
+  a choice: IANA has registered no alternative.
+
+  Kept apart from `digest-fn` so nothing can reach for SHA-1 as a DS digest,
+  where collision resistance IS what is being relied on and RFC 8624 deprecates
+  it."
+  [octets]
+  #?(:clj (.digest (MessageDigest/getInstance "SHA-1") (->host-bytes octets))
+     :cljs (let [c (js/require "crypto")]
+             (-> (.createHash c "sha1")
+                 (.update (js/Buffer.from (->host-bytes octets)))
+                 (.digest)))))
+
 (defn sign-fn
   "`(fn [algorithm seed octets] -> signature-octets)` for `dnssec.sign/rrsig`.
 
