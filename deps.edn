@@ -6,9 +6,16 @@
  ;; dnssec.canonical and dnssec.sign remain crypto-free — the dependency below
  ;; is used only by dnssec.provider, the REFERENCE injection. A caller with an
  ;; HSM or a key store passes its own sign-fn/digest-fn and never loads it.
- :deps {io.github.kotoba-lang/ed25519
-        {:git/url "https://github.com/kotoba-lang/ed25519.git"
-         :git/sha "c1ba8322a33b668da1311ca69a8cdde3c7981b52"}}
+ ;; kotoba-lang/ed25519 was renamed to kotoba-lang/org-ietf-ed25519. The old
+ ;; name still redirects, so the old coordinate kept resolving -- but
+ ;; tools.deps dedupes by the coordinate SYMBOL, so any closure that also
+ ;; reaches the repository under its current name gets ed25519.core twice,
+ ;; from two checkouts at two shas. The :git/sha is unchanged; it is the same
+ ;; repository. The explicit :git/url is dropped rather than rewritten:
+ ;; io.github.<org>/<name> derives it, so carrying it only creates a second
+ ;; place for the name to go stale, which is exactly what happened here.
+ :deps {io.github.kotoba-lang/org-ietf-ed25519
+        {:git/sha "c1ba8322a33b668da1311ca69a8cdde3c7981b52"}}
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
