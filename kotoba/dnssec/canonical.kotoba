@@ -73,7 +73,7 @@
 ;; not grow a second copy of the ordering (ADR-2608261100).
 
 (ns dnssec.canonical
-  (:export [name-problem compare-names same-name? wire-length label-count]))
+  (:export [main name-problem compare-names same-name? wire-length label-count]))
 
 ;; --- characters -----------------------------------------------------------------
 
@@ -216,3 +216,27 @@
 
 (defn same-name? [a :string b :string] :bool
   (if (= (compare-names a b) 0) true false))
+
+;; --- the artifact's own conformance check ------------------------------------------
+;;
+;; `main` is the browser profile's entry point -- `runtime/browser-host.mjs`
+;; refuses to instantiate a module without one -- and it is not a stub. It
+;; runs the ordering and one refusal back through the decisions above and
+;; answers 0 only when each still decides the way this object was built to
+;; decide, so a COMPILED artifact can be asked whether it is itself by a
+;; host that knows nothing about DNS.
+;;
+;; Three, not ten: the native backends evaluate `main` as a compile-time
+;; oracle with a budget, and ten calls of this shape is `native artifact
+;; oracle evaluation rejected`. The wider check lives in the suite.
+;;
+;; The names here are short on purpose. A module's fuel is a private global
+;; baked in at compile time and the default is 512, which the suite measured
+;; is enough for an ordinary name and not for the 192-character label.
+
+(defn main [] :i64
+  (cond
+    (if (= (compare-names "example.com" "a.example.com") -1) false true) 1
+    (if (= (name-problem "a..com") :empty-label) false true) 2
+    (if (same-name? "EXAMPLE.COM" "example.com.") false true) 3
+    :else 0))
