@@ -1,5 +1,5 @@
 (ns dnssec.nsec3-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.lang.text] [clojure.test :refer [deftest is testing]]
             [dnssec.canonical :as c]
             [dnssec.nsec3 :as n3]
             [dnssec.provider :as p]))
@@ -32,7 +32,7 @@
     (is (re-matches #"[0-9A-V]+" (n3/base32hex (mapv int "foobar")))
         "0-9A-V, not A-Z2-7 — they differ in every symbol"))
   (testing "unpadded, because an NSEC3 owner name carries no ="
-    (is (not (clojure.string/includes? (n3/base32hex [1]) "=")))))
+    (is (not (kotoba.lang.text/includes? (n3/base32hex [1]) "=")))))
 
 ;; ── hashing ───────────────────────────────────────────────────────────────
 
@@ -97,9 +97,9 @@
 (deftest a-zone-name-is-not-readable-from-the-chain
   (let [ch (n3/chain p/sha1-fn zone opts)
         text (pr-str ch)]
-    (is (not (clojure.string/includes? text "secret-internal-host"))
+    (is (not (kotoba.lang.text/includes? text "secret-internal-host"))
         "this is the entire reason NSEC3 exists")
-    (is (not (clojure.string/includes? text "www.example.com")))))
+    (is (not (kotoba.lang.text/includes? text "www.example.com")))))
 
 ;; ── coverage, including the wrap ──────────────────────────────────────────
 

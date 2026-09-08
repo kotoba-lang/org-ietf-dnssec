@@ -31,7 +31,7 @@
   the rightmost label and a shorter name is a prefix. Sorting names as ordinary
   strings — the obvious mistake — puts `a.example.com` first and produces an
   NSEC chain that proves nonexistence of the wrong things."
-  (:require [clojure.string :as str]))
+  (:require [kotoba.lang.text :as str]))
 
 ;; ── bytes ─────────────────────────────────────────────────────────────────
 
@@ -65,14 +65,14 @@
   (let [ls (labels name)]
     (if (empty? ls)
       "."
-      (str (str/join "." (map #(str/lower-case %) ls)) "."))))
+      (str (str/join "." (map #(str/lower %) ls)) "."))))
 
 (defn encode-name
   "Uncompressed wire form of a canonical name: each label length-prefixed, a
   zero octet for root. **Never compressed** — see the namespace docstring."
   [name]
   (into (vec (mapcat (fn [l] (into [(count l)] (ascii-bytes l)))
-                     (map str/lower-case (labels name))))
+                     (map str/lower (labels name))))
         [0]))
 
 (defn compare-bytes
@@ -100,8 +100,8 @@
   disagrees there, and every place it disagrees produces an NSEC chain that
   proves the nonexistence of names that do exist."
   [a b]
-  (let [la (reverse (map str/lower-case (labels a)))
-        lb (reverse (map str/lower-case (labels b)))]
+  (let [la (reverse (map str/lower (labels a)))
+        lb (reverse (map str/lower (labels b)))]
     (loop [xs la ys lb]
       (cond
         (and (empty? xs) (empty? ys)) 0

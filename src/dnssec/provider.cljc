@@ -28,7 +28,7 @@
   request handler, so JVM or Node is the right place for it — and pretending
   otherwise would mean an API that returns promises for a computation that has
   no reason to be async."
-  (:require [dnssec.sign :as sign]
+  (:require [kotoba.lang.text] [dnssec.sign :as sign]
             [ed25519.core :as ed])
   #?(:clj (:import (java.security MessageDigest))))
 
@@ -68,7 +68,7 @@
     (->octets
      #?(:clj (.digest (MessageDigest/getInstance ^String algo) (->host-bytes octets))
         :cljs (let [c (js/require "crypto")]
-                (-> (.createHash c (clojure.string/lower-case (clojure.string/replace algo "-" "")))
+                (-> (.createHash c (kotoba.lang.text/lower (kotoba.lang.text/replace algo "-" "")))
                     (.update (js/Buffer.from (->host-bytes octets)))
                     (.digest)))))))
 

@@ -14,7 +14,7 @@
 ;;     `canonical-name`'s docstring says only ASCII `A`-`Z` is folded and
 ;;     that "a locale-aware or Unicode-aware lower-casing would change
 ;;     octets the spec requires to be left alone". It calls
-;;     `clojure.string/lower-case`. With the default locale set to tr-TR,
+;;     `kotoba.lang.text/lower`. With the default locale set to tr-TR,
 ;;     `IETF.example` folds to `ıetf.example.` and `encode-name` emits 305,
 ;;     which is not an octet. The same zone signed on two machines is two
 ;;     different zones.
@@ -34,7 +34,7 @@
 ;; the ordering (ADR-2608261100).
 
 (ns dnssec.canonical-kotoba-test
-  (:require [clojure.java.io :as io]
+  (:require [kotoba.lang.text] [clojure.java.io :as io]
             [clojure.test :refer [deftest is testing]]
             [dnssec.canonical :as c]
             [kotoba.compiler.core :as compiler]

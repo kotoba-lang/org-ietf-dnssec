@@ -33,7 +33,7 @@
   name. Omitting that prefix — signing only the records — is a real and common
   mistake that produces signatures no validator accepts, because a validator
   reconstructs the blob from the RRSIG it received."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [dnssec.canonical :as c]))
 
 ;; ── algorithms ────────────────────────────────────────────────────────────
