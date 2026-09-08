@@ -14,7 +14,12 @@
  ;; repository. The explicit :git/url is dropped rather than rewritten:
  ;; io.github.<org>/<name> derives it, so carrying it only creates a second
  ;; place for the name to go stale, which is exactly what happened here.
- :deps {io.github.kotoba-lang/org-ietf-ed25519
+ :deps {
+        ;; kotoba.lang.text, not clojure.string. Pinned as an explicit floor:
+        ;; tools.deps takes the NEWEST sha it is shown, so without a floor here
+        ;; this repo silently rides whatever a sibling happens to name.
+        io.github.kotoba-lang/text {:git/sha "73bdb13ae7a3d004b44bca08be03a3191157a38f"}
+       io.github.kotoba-lang/org-ietf-ed25519
         {:git/sha "c1ba8322a33b668da1311ca69a8cdde3c7981b52"}}
  :aliases
  {:test {:extra-paths ["test"]
