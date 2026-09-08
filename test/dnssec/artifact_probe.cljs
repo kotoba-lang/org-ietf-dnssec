@@ -18,7 +18,7 @@
   (:require ["node:fs" :as fs]
             ["node:child_process" :as cp]
             ["node:path" :as path]
-            [clojure.string :as str]))
+            [kotoba.lang.text :as str]))
 
 (def cases
   [["name-problem" "example.com"] ["name-problem" "a..com"]
