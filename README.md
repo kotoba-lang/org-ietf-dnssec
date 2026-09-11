@@ -194,7 +194,7 @@ security model, not a parameter.
 ## Test
 
 ```
-clojure -M:test
+kbb -M:test
 ```
 
 25 tests / 88 assertions, including a real-key sign-then-verify round trip.
