@@ -1,5 +1,5 @@
 (ns dnssec.nsec3-test
-  (:require [kotoba.lang.text] [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.lang.text] [kotoba.test :refer [deftest is testing]]
             [dnssec.canonical :as c]
             [dnssec.nsec3 :as n3]
             [dnssec.provider :as p]))
