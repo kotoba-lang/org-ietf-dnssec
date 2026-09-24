@@ -35,7 +35,7 @@
 
 (ns dnssec.canonical-kotoba-test
   (:require [kotoba.lang.text] [clojure.java.io :as io]
-            [clojure.test :refer [deftest is testing]]
+            [kotoba.test :refer [deftest is testing]]
             [dnssec.canonical :as c]
             [kotoba.compiler.core :as compiler]
             [kotoba.kir :as ir])

@@ -2,7 +2,7 @@
   "Real crypto, end to end. The rest of the suite proves *which bytes* get
   signed with an echo signer; this proves those bytes actually verify — which
   is the only thing that distinguishes a signer from a byte shuffler."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [dnssec.canonical :as c]
             [dnssec.provider :as p]
             [dnssec.sign :as sign]))
