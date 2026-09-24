@@ -34,7 +34,7 @@
 ;; the ordering (ADR-2608261100).
 
 (ns dnssec.canonical-kotoba-test
-  (:require [kotoba.lang.text] [clojure.java.io :as io]
+  (:require [kotoba.lang.text] [kotoba.io :as io]
             [kotoba.test :refer [deftest is testing]]
             [dnssec.canonical :as c]
             [kotoba.compiler.core :as compiler]
@@ -64,7 +64,7 @@
 (defn- gproblem* [s] (call 'name-problem [s] long-name-fuel))
 
 (deftest guest-source-is-present
-  (is (.exists guest-file) (str "kotoba object not found at " guest-file)))
+  (is (io/exists? guest-file) (str "kotoba object not found at " guest-file)))
 
 ;; --- parity on the ordering ---------------------------------------------------------
 
