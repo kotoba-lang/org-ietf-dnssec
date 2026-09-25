@@ -84,7 +84,7 @@
 (deftest an-unmodelled-type-signs-through-its-raw-octets
   (is (= [1 2 3] (c/encode-rdata "TYPE65535" {:zone/raw [1 2 3]}))
       "a signer need not understand an RR, only serialize it the way a validator will")
-  (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+  (is (thrown? js/Error
                (c/encode-rdata "TYPE65535" {:zone/something "x"}))))
 
 ;; ── key tag ───────────────────────────────────────────────────────────────
@@ -101,7 +101,7 @@
                              :public-key (vec (range 1 33)) :ksk? true})]
         (is (not= (sign/dnskey-tag k :ed25519) (sign/dnskey-tag k2 :ed25519))))))
   (testing "algorithm 1 has a different rule and is refused rather than answered wrongly"
-    (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+    (is (thrown? js/Error
                  (sign/key-tag [1 2 3 4] 1)))))
 
 (deftest the-sep-bit-distinguishes-a-ksk
@@ -165,11 +165,11 @@
         "a wildcard's own label is not counted — an off-by-one here breaks only wildcard proofs")))
 
 (deftest an-rrsig-covers-exactly-one-rrset
-  (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+  (is (thrown? js/Error
                (sign/rrsig [(a-rr "a.example.com." "192.0.2.1")
                             (a-rr "b.example.com." "192.0.2.2")]
                            sig-params)))
-  (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+  (is (thrown? js/Error
                (sign/rrsig [] sig-params)))
   (is (:zone/rdata (sign/rrsig [(a-rr "a.example.com." "192.0.2.1")] sig-params))))
 
