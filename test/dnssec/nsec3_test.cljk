@@ -61,7 +61,7 @@
             "the common implementation error, and it produces a chain nobody else computes")))))
 
 (deftest iterations-above-the-bound-are-refused
-  (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+  (is (thrown? js/Error
                (n3/hash-name p/sha1-fn "a.example.com." {:iterations 150})))
   (testing "RFC 9276 recommends zero, and that is the default"
     (is (zero? n3/default-iterations))

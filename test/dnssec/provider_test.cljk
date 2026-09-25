@@ -32,9 +32,9 @@
   (is (= 48 (count (p/digest-fn :sha384 []))) "SHA-384 is 48 octets"))
 
 (deftest an-unknown-digest-type-raises-rather-than-defaulting
-  (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+  (is (thrown? js/Error
                (p/digest-fn :sha1 [])))
-  (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+  (is (thrown? js/Error
                (p/digest-fn :md5 [])))
   (testing "a DS whose digest field and digest bytes disagree fails everywhere, silently"
     (is (= 32 (count (p/digest-fn 2 []))) "the numeric spelling works too")))
@@ -57,7 +57,7 @@
 
 (deftest algorithms-this-provider-does-not-cover-are-refused-not-mis-signed
   (doseq [a [:ecdsap256sha256 :rsasha256 13 8]]
-    (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+    (is (thrown? js/Error
                  (p/sign-fn a seed [1 2 3]))
         (str a " is a legitimate DNSSEC algorithm this provider does not implement"))))
 
